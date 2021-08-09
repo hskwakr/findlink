@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	AppName = "webcrawler"
+	AppName = "findlink"
 
 	ExitCodeOK               = 0
 	ExitCodeParseFlagError   = 1
@@ -40,6 +40,8 @@ func (c *CLI) Run(args []string) int {
 		log.Println(err)
 		return ExitCodeApplicationError
 	}
+
+	printOutput(links)
 	writeJSON(links)
 
 	return ExitCodeOK
@@ -87,6 +89,14 @@ func urlValidation(raw string) bool {
 
 	URL = u.String()
 	return true
+}
+
+func printOutput(data []crawler.Link) {
+	fmt.Println()
+
+	for _, v := range data {
+		fmt.Println(v.URL)
+	}
 }
 
 func writeJSON(data []crawler.Link) {
