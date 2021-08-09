@@ -28,6 +28,9 @@ type CLI struct {
 
 var (
 	URL string
+
+	//Options
+	o *string
 )
 
 func (c *CLI) Run(args []string) int {
@@ -41,8 +44,11 @@ func (c *CLI) Run(args []string) int {
 		return ExitCodeApplicationError
 	}
 
-	printOutput(links)
-	writeJSON(links)
+	if *o != "" {
+		writeJSON(links, *o)
+	} else {
+		printOutput(links)
+	}
 
 	return ExitCodeOK
 }
@@ -53,9 +59,12 @@ func (c *CLI) parse(args []string) int {
 
 	flags.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage:\n\t"+AppName+" [option] URL\n\n")
-		flag.PrintDefaults()
+		flags.PrintDefaults()
 		os.Exit(0)
 	}
+
+	// options
+	o = flags.String("o", "", "The path to the json file for output.")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		return ExitCodeParseFlagError
@@ -99,11 +108,11 @@ func printOutput(data []crawler.Link) {
 	}
 }
 
-func writeJSON(data []crawler.Link) {
+func writeJSON(data []crawler.Link, path string) {
 	file, err := json.MarshalIndent(data, "", " ")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_ = ioutil.WriteFile("links.json", file, 0644)
+	_ = ioutil.WriteFile(path, file, 0644)
 }

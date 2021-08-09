@@ -15,4 +15,4 @@
 # vendor/
 
 # Output of the excutable file
-links.json
+/*.json

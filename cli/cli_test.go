@@ -22,6 +22,11 @@ func TestParse(t *testing.T) {
 			in:   AppName,
 			want: 1,
 		},
+		{
+			name: "case 3: Option -o",
+			in:   AppName + "-o=links.json http://www.foo.bar/index.html",
+			want: 0,
+		},
 	}
 
 	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
