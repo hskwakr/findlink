@@ -2,6 +2,9 @@ package crawler
 
 import (
 	"fmt"
+	"log"
+	"net/url"
+	"strings"
 
 	"github.com/gocolly/colly"
 )
@@ -10,7 +13,7 @@ type Link struct {
 	URL string `json:"URL"`
 }
 
-func GetLinks(site string) ([]Link, error) {
+func GetLinks(site string, domain string) ([]Link, error) {
 	links := make([]Link, 0)
 	c := colly.NewCollector()
 
@@ -28,5 +31,25 @@ func GetLinks(site string) ([]Link, error) {
 		return links, err
 	}
 
+	if domain != "" {
+		links = filterByDomain(links, domain)
+	}
 	return links, nil
+}
+
+func filterByDomain(links []Link, domain string) []Link {
+	r := make([]Link, 0)
+	for _, v := range links {
+		u, err := url.ParseRequestURI(v.URL)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		//log.Println(u.Host)
+		if strings.Index(u.Host, domain) != -1 {
+			r = append(r, v)
+		}
+	}
+
+	return r
 }

@@ -82,7 +82,7 @@ func TestGetLinks(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			got, err := GetLinks(test.in)
+			got, err := GetLinks(test.in, "")
 			if err != nil {
 				t.Errorf("error: %v", err)
 			}
@@ -90,6 +90,46 @@ func TestGetLinks(t *testing.T) {
 			if !equal(got, test.want) {
 				//t.Errorf("got:\n%v\nwant:\n%v\n", got, test.want)
 				t.Errorf("got\twant\n%v", toStringTwoLinkSlices(got, test.want))
+			}
+		})
+	}
+}
+
+func TestFilterByDomain(t *testing.T) {
+	type input struct {
+		links  []Link
+		domain string
+	}
+
+	tests := []struct {
+		name string
+		in   input
+		want []Link
+	}{
+		{
+			name: "case 1: Proper",
+			in: input{
+				[]Link{
+					{URL: "http://example.com"},
+					{URL: "http://example.jp"},
+					{URL: "http://foo.com"},
+					{URL: "http://www.example.com"},
+				},
+				"example.com",
+			},
+			want: []Link{
+				{URL: "http://example.com"},
+				{URL: "http://www.example.com"},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got := filterByDomain(test.in.links, test.in.domain)
+
+			if !equal(got, test.want) {
+				t.Errorf("got want\n%v", toStringTwoLinkSlices(got, test.want))
 			}
 		})
 	}

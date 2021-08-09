@@ -31,6 +31,7 @@ var (
 
 	//Options
 	o *string
+	d *string
 )
 
 func (c *CLI) Run(args []string) int {
@@ -38,7 +39,7 @@ func (c *CLI) Run(args []string) int {
 		return r
 	}
 
-	links, err := crawler.GetLinks(URL)
+	links, err := crawler.GetLinks(URL, *d)
 	if err != nil {
 		log.Println(err)
 		return ExitCodeApplicationError
@@ -65,6 +66,7 @@ func (c *CLI) parse(args []string) int {
 
 	// options
 	o = flags.String("o", "", "The path to the json file for output.")
+	d = flags.String("d", "", "Filter the output by domain.")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		return ExitCodeParseFlagError
