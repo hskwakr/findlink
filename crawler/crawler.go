@@ -46,7 +46,7 @@ func filterByDomain(links []Link, domain string) []Link {
 			continue
 		}
 		//log.Println(u.Host)
-		if strings.Index(u.Host, domain) != -1 {
+		if strings.Contains(u.Host, domain) {
 			r = append(r, v)
 		}
 	}
