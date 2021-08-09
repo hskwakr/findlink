@@ -52,7 +52,7 @@ func (c *CLI) parse(args []string) int {
 	flags.SetOutput(c.ErrStream)
 
 	flags.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "Usage:\n\t"+AppName+" [oprion] URL\n\n")
+		fmt.Fprintf(flag.CommandLine.Output(), "Usage:\n\t"+AppName+" [option] URL\n\n")
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
