@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -111,10 +112,14 @@ func printOutput(data []crawler.Link) {
 }
 
 func writeJSON(data []crawler.Link, path string) {
-	file, err := json.MarshalIndent(data, "", " ")
-	if err != nil {
+	var b bytes.Buffer
+	enc := json.NewEncoder(&b)
+
+	enc.SetEscapeHTML(false)
+	enc.SetIndent("", "  ")
+	if err := enc.Encode(data); err != nil {
 		log.Fatal(err)
 	}
 
-	_ = ioutil.WriteFile(path, file, 0644)
+	_ = ioutil.WriteFile(path, []byte(b.String()), 0644)
 }
