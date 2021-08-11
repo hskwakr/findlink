@@ -121,5 +121,5 @@ func writeJSON(data []crawler.Link, path string) {
 		log.Fatal(err)
 	}
 
-	_ = ioutil.WriteFile(path, []byte(b.String()), 0644)
+	_ = ioutil.WriteFile(path, b.Bytes(), 0644)
 }
