@@ -2,6 +2,7 @@ package crawler
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/url"
 	"strings"
@@ -10,10 +11,10 @@ import (
 )
 
 type Link struct {
-	URL string `json:"URL"`
+	URL string `json:"url"`
 }
 
-func GetLinks(site string, domain string) ([]Link, error) {
+func GetLinks(site string, domain string, o io.Writer) ([]Link, error) {
 	links := make([]Link, 0)
 	c := colly.NewCollector()
 
@@ -24,28 +25,36 @@ func GetLinks(site string, domain string) ([]Link, error) {
 	})
 
 	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting", r.URL)
+		msg := fmt.Sprint("Visiting: ", r.URL.String(), "\n")
+
+		if _, err := o.Write([]byte(msg)); err != nil {
+			log.Fatal("failed to write on request:", err)
+		}
 	})
 
 	if err := c.Visit(site); err != nil {
-		return links, err
+		return links, fmt.Errorf("filed to visit: %w", err)
 	}
 
 	if domain != "" {
 		links = filterByDomain(links, domain)
 	}
+
 	return links, nil
 }
 
 func filterByDomain(links []Link, domain string) []Link {
 	r := make([]Link, 0)
+
 	for _, v := range links {
 		u, err := url.ParseRequestURI(v.URL)
 		if err != nil {
 			log.Println(err)
+
 			continue
 		}
-		//log.Println(u.Host)
+
+		// log.Println(u.Host)
 		if strings.Contains(u.Host, domain) {
 			r = append(r, v)
 		}
