@@ -2,35 +2,25 @@ package crawler
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"testing"
 )
 
-// Compare two variables
+// Compare two variables.
 func equal(a, b interface{}) bool {
 	return reflect.DeepEqual(a, b)
 }
 
 func toStringTwoLinkSlices(a, b []Link) string {
 	var r string
-	str := make([]string, 0)
+
+	var str []string
 
 	if len(a) >= len(b) {
-		for i := range a {
-			if i < len(b) {
-				str = append(str, fmt.Sprintf("%v %v", a[i], b[i]))
-			} else {
-				str = append(str, fmt.Sprintf("%v {}", a[i]))
-			}
-		}
+		str = formatLinks(a, b)
 	} else {
-		for i := range b {
-			if i < len(a) {
-				str = append(str, fmt.Sprintf("%v %v", a[i], b[i]))
-			} else {
-				str = append(str, fmt.Sprintf("{} %v", b[i]))
-			}
-		}
+		str = formatLinks(b, a)
 	}
 
 	for _, s := range str {
@@ -40,7 +30,23 @@ func toStringTwoLinkSlices(a, b []Link) string {
 	return r
 }
 
+func formatLinks(v1, v2 []Link) []string {
+	var r []string
+
+	for i := range v1 {
+		if i < len(v2) {
+			r = append(r, fmt.Sprintf("%v %v", v1[i], v2[i]))
+		} else {
+			r = append(r, fmt.Sprintf("%v {}", v1[i]))
+		}
+	}
+
+	return r
+}
+
 func TestGetLinks(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		in   string
@@ -80,15 +86,17 @@ func TestGetLinks(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, v := range tests {
+		test := v
 		t.Run(test.name, func(t *testing.T) {
-			got, err := GetLinks(test.in, "")
+			t.Parallel()
+
+			got, err := GetLinks(test.in, "", os.Stdout)
 			if err != nil {
 				t.Errorf("error: %v", err)
 			}
 
 			if !equal(got, test.want) {
-				//t.Errorf("got:\n%v\nwant:\n%v\n", got, test.want)
 				t.Errorf("got\twant\n%v", toStringTwoLinkSlices(got, test.want))
 			}
 		})
@@ -96,6 +104,8 @@ func TestGetLinks(t *testing.T) {
 }
 
 func TestFilterByDomain(t *testing.T) {
+	t.Parallel()
+
 	type input struct {
 		links  []Link
 		domain string
@@ -124,8 +134,12 @@ func TestFilterByDomain(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, v := range tests {
+		test := v
+
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			got := filterByDomain(test.in.links, test.in.domain)
 
 			if !equal(got, test.want) {

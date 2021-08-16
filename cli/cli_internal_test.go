@@ -7,6 +7,8 @@ import (
 )
 
 func TestParse(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		in   string
@@ -30,13 +32,25 @@ func TestParse(t *testing.T) {
 	}
 
 	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
-	app := &CLI{outStream, errStream}
+	app := &CLI{
+		OutStream: outStream,
+		ErrStream: errStream,
+		args: args{
+			url: "",
+			o:   nil,
+			d:   nil,
+		},
+	}
 
-	for _, test := range tests {
+	for _, v := range tests {
+		test := v
+
 		t.Run(test.name, func(t *testing.T) {
-			args := strings.Split(test.in, " ")
+			t.Parallel()
 
+			args := strings.Split(test.in, " ")
 			status := app.parse(args)
+
 			if status != test.want {
 				t.Errorf("ExitStatus: %d, want: %d", status, test.want)
 			}
@@ -45,6 +59,8 @@ func TestParse(t *testing.T) {
 }
 
 func TestUrlValidation(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		in   string
@@ -82,8 +98,12 @@ func TestUrlValidation(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, v := range tests {
+		test := v
+
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			got := urlValidation(test.in)
 			if got != test.want {
 				t.Errorf("got: %v, want: %v", got, test.want)

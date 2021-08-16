@@ -25,31 +25,34 @@ const (
 
 type CLI struct {
 	OutStream, ErrStream io.Writer
+	args
 }
 
-var (
-	URL string
+type args struct {
+	// arguments
+	url string
 
-	//Options
+	// options
 	o *string
 	d *string
-)
+}
 
 func (c *CLI) Run(args []string) int {
 	if r := c.parse(args); r != ExitCodeOK {
 		return r
 	}
 
-	links, err := crawler.GetLinks(URL, *d)
+	links, err := crawler.GetLinks(c.url, *c.d, c.OutStream)
 	if err != nil {
 		log.Println(err)
+
 		return ExitCodeApplicationError
 	}
 
-	if *o != "" {
-		writeJSON(links, *o)
+	if *c.o != "" {
+		writeJSON(links, *c.o)
 	} else {
-		printOutput(links)
+		writeOut(c.OutStream, links)
 	}
 
 	return ExitCodeOK
@@ -66,21 +69,20 @@ func (c *CLI) parse(args []string) int {
 	}
 
 	// options
-	o = flags.String("o", "", "The path to the json file for output.")
-	d = flags.String("d", "", "Filter the output by domain.")
+	c.o = flags.String("o", "", "The path to the json file for output.")
+	c.d = flags.String("d", "", "Filter the output by domain.")
 
 	if err := flags.Parse(args[1:]); err != nil {
 		return ExitCodeParseFlagError
 	}
 
 	// Two arguments are required
-	//fmt.Println(len(flags.Args()))
 	if len(flags.Args()) < 1 {
 		return ExitCodeArgumentsError
 	}
 
-	url := flags.Arg(0)
-	if !urlValidation(url) {
+	c.url = flags.Arg(0)
+	if !urlValidation(c.url) {
 		return ExitCodeArgumentsError
 	}
 
@@ -91,35 +93,43 @@ func urlValidation(raw string) bool {
 	u, err := url.ParseRequestURI(raw)
 	if err != nil {
 		log.Println(err)
+
 		return false
 	}
 
 	if u.Scheme != "http" && u.Scheme != "https" {
 		log.Println("Wrong scheme: should be http or https")
+
 		return false
 	}
 
-	URL = u.String()
 	return true
 }
 
-func printOutput(data []crawler.Link) {
-	fmt.Println()
+func writeOut(o io.Writer, data []crawler.Link) {
+	if _, err := o.Write([]byte("\n")); err != nil {
+		log.Fatal(err)
+	}
 
 	for _, v := range data {
-		fmt.Println(v.URL)
+		// fmt.Println(v.URL)
+		if _, err := o.Write([]byte(v.URL + "\n")); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
 func writeJSON(data []crawler.Link, path string) {
 	var b bytes.Buffer
-	enc := json.NewEncoder(&b)
 
+	enc := json.NewEncoder(&b)
 	enc.SetEscapeHTML(false)
 	enc.SetIndent("", "  ")
+
 	if err := enc.Encode(data); err != nil {
 		log.Fatal(err)
 	}
 
-	_ = ioutil.WriteFile(path, b.Bytes(), 0644)
+	const mode = 0644
+	_ = ioutil.WriteFile(path, b.Bytes(), os.FileMode(mode))
 }
