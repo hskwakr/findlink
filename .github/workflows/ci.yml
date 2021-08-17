@@ -13,6 +13,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Build docker
+      run: docker build -t test-web ./test
+        
+    - name: Run docker for web server for testing
+      run: docker run -dit --name test-web-server -p 8080:80 test-web
+      
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
@@ -20,22 +26,7 @@ jobs:
 
     - name: Test
       run: go test -v ./...
-      
   
-  test-docker:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    
-    - name: Build docker
-      run: docker build -t test-web ./test
-        
-    - name: Run docker
-      run: docker run -dit --name test-web-server -p 8080:80 test-web
-        
-    - name: docker ps
-      run: docker ps
-          
   lint:
     runs-on: ubuntu-latest
     steps:
