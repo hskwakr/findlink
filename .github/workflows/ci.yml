@@ -33,11 +33,9 @@ jobs:
         
     - name: Build
       run: |
-        ./test/build-test-server.sh
-        
-    - name: Curl
-      run: |
-        curl http://localhost:8080
+        docker build ./test
+    - name: Show Images
+      run: docker images
           
   lint:
     runs-on: ubuntu-latest
