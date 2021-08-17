@@ -35,10 +35,11 @@ jobs:
         push: false
         
     - name: Run docker
-      uses: addnab/docker-run-action@v3
-      with:
-        image: test-image:latest
-        options: -dit -p 8080:80
+      run: docker run -dit -p 8080:80 test-image:latest
+      #uses: addnab/docker-run-action@v3
+      #with:
+      #  image: test-image:latest
+      #  options: -dit -p 8080:80
         
     - name: curl
       uses: wei/curl@master
