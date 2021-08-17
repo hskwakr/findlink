@@ -41,7 +41,9 @@ jobs:
         options: -dit -p 8080:80
         
     - name: curl
-      run: curl http://localhost:8080
+      uses: wei/curl@master
+      with:
+        args: https://localhost:8080
           
   lint:
     runs-on: ubuntu-latest
