@@ -1,3 +1,3 @@
 FROM httpd:alpine3.14
 
-COPY ./index.html /usr/local/apache2/htdocs/
+COPY ./*.html /usr/local/apache2/htdocs/
