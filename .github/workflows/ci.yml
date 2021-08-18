@@ -28,6 +28,7 @@ jobs:
         
     - name: Connection test for test web server
       run: curl localhost:8080/example.html
+    - run: pwd
       
     - name: Test
       run: go test -v ./...
