@@ -16,7 +16,8 @@ jobs:
         image: httpd
         ports:
           - 8080:80
-        options: -v ${{ github.workspace }}/test:/usr/local/apache2/htdocs/
+        volumes: 
+          - ${{ github.workspace }}/test:/usr/local/apache2/htdocs/
         
     steps:
     - uses: actions/checkout@v2
