@@ -10,20 +10,26 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    
+    services:
+      httpd:
+        image: httpd
+        ports:
+          - 8080:80
+        volumes:
+          - test:/usr/local/apache2/htdocs/
+        
     steps:
     - uses: actions/checkout@v2
-
-    - name: Build docker
-      run: docker build -t test-web ./test
-        
-    - name: Run docker for web server for testing
-      run: docker run -dit --name test-web-server -p 8080:80 test-web
       
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
         go-version: 1.16
-
+        
+    - name: Connection test for test web server
+      run: curl localhost:8080
+      
     - name: Test
       run: go test -v ./...
   
