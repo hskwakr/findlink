@@ -28,7 +28,7 @@ jobs:
         go-version: 1.16
         
     - name: Connection test for test web server
-      run: curl localhost:8080/index.html
+      run: curl localhost:8080/example.html
       
     - name: Test
       run: go test -v ./...
