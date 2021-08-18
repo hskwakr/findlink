@@ -16,8 +16,7 @@ jobs:
         image: httpd
         ports:
           - 8080:80
-        volumes:
-          - test:/usr/local/apache2/htdocs/
+        options: -v test:/usr/local/apache2/htdocs/
         
     steps:
     - uses: actions/checkout@v2
