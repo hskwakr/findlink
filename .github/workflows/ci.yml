@@ -16,7 +16,7 @@ jobs:
         image: httpd
         ports:
           - 8080:80
-        options: -v test:/usr/local/apache2/htdocs/
+        options: -v /home/runner/work/findlink/findlink/test:/usr/local/apache2/htdocs/
         
     steps:
     - uses: actions/checkout@v2
@@ -26,9 +26,9 @@ jobs:
       with:
         go-version: 1.16
         
+    - run: pwd
     - name: Connection test for test web server
       run: curl localhost:8080/example.html
-    - run: pwd
       
     - name: Test
       run: go test -v ./...
