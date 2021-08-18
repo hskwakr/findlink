@@ -26,8 +26,7 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: 1.16
-        
-    - run: echo ${{ github.workspace }}
+
     - name: Connection test for test web server
       run: curl localhost:8080/example.html
       
