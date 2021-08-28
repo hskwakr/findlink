@@ -38,7 +38,7 @@ jobs:
       run: docker cp . tsc:/home/working
     
     - name: Run integration test
-      run: docker exec -it tsc /usr/local/go/bin/go test -tags=integration -v
+      run: docker exec tsc /usr/local/go/bin/go test -tags=integration -v
     
   lint:
     runs-on: ubuntu-latest
