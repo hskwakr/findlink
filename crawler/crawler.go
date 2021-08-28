@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net/url"
 	"strings"
 
 	"github.com/gocolly/colly"
@@ -37,25 +36,17 @@ func GetLinks(site string, domain string, o io.Writer) ([]Link, error) {
 	}
 
 	if domain != "" {
-		links = filterByDomain(links, domain)
+		links = filterByString(links, domain)
 	}
 
 	return links, nil
 }
 
-func filterByDomain(links []Link, domain string) []Link {
+func filterByString(links []Link, str string) []Link {
 	r := make([]Link, 0)
 
 	for _, v := range links {
-		u, err := url.ParseRequestURI(v.URL)
-		if err != nil {
-			log.Println(err)
-
-			continue
-		}
-
-		// log.Println(u.Host)
-		if strings.Contains(u.Host, domain) {
+		if strings.Contains(v.URL, str) {
 			r = append(r, v)
 		}
 	}
