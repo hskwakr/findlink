@@ -11,4 +11,4 @@ docker run -dit --name "${CONTAINER}" --rm  -p 8080:80 "${IMAGE}"
 docker cp . "${CONTAINER}":/home/working 
 
 # Run integration test
-docker exec -it "${CONTAINER}" /usr/local/go/bin/go test -tags=integration -v
+docker exec "${CONTAINER}" /usr/local/go/bin/go test -tags=integration -v
