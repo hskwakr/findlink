@@ -10,14 +10,6 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    
-    services:
-      httpd:
-        image: httpd
-        ports:
-          - 8080:80
-        volumes: 
-          - ${{ github.workspace }}/test:/usr/local/apache2/htdocs/
         
     steps:
     - uses: actions/checkout@v2
@@ -26,9 +18,6 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: 1.16
-
-    - name: Connection test for test web server
-      run: curl localhost:8080/example.html
       
     - name: Test
       run: go test -v ./...
