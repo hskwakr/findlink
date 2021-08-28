@@ -20,7 +20,7 @@ func TestCrawl(t *testing.T) {
 	}{
 		{
 			name: "case 1: Proper",
-			in:   cli.AppName + " http://localhost:8080/example.html",
+			in:   cli.AppName + " http://localhost/example.html",
 			want: 0,
 		},
 		{
@@ -30,7 +30,7 @@ func TestCrawl(t *testing.T) {
 		},
 		{
 			name: "case 3: Option -d",
-			in:   cli.AppName + " -d=example.com http://localhost:8080/example.html",
+			in:   cli.AppName + " -d=example.com http://localhost/example.html",
 			want: 0,
 		},
 	}
