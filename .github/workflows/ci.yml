@@ -28,8 +28,17 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: Test
-      run: ./test/build-test-server.sh
+    - name: Build Dockerfile
+      run: docker build -t ts ./test
+    
+    - name: Run Dokcer
+      run: docker run -dit --name tsc --rm -p 8080:80 ts
+    
+    - name: Copy project to docker
+      run: docker cp . tsc :/home/working
+    
+    - name: Run integration test
+      run: docker exec -it tsc /usr/local/go/bin/go test -tags=integration -v
     
   lint:
     runs-on: ubuntu-latest
